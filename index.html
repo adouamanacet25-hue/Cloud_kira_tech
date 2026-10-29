@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CLΩUS TΣCH — Coffre privé</title>
+<meta name="theme-color" content="#060a12">
+<style>
+:root{
+  --bg:#060a12;
+  --card:rgba(17,25,39,.78);
+  --line:rgba(120,180,255,.14);
+  --txt:#e8f1ff;
+  --muted:#8ba0bd;
+  --cyan:#22e0ff;
+  --violet:#8a6bff;
+  --danger:#ff4d6d;
+  --r:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(900px 500px at 12% -10%,rgba(34,224,255,.16),transparent 60%),
+    radial-gradient(800px 500px at 90% 0%,rgba(138,107,255,.18),transparent 60%),
+    radial-gradient(700px 600px at 50% 120%,rgba(34,224,255,.10),transparent 60%),
+    var(--bg);
+  color:var(--txt);
+  min-height:100%;
+}
+.hidden{display:none!important}
+
+/* ---------- AUTH ---------- */
+.auth{min-height:100dvh;display:grid;place-items:center;padding:22px}
+.auth-card{
+  width:100%;max-width:420px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:30px 24px 22px;
+  backdrop-filter:blur(16px);
+  box-shadow:0 30px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05);
+  animation:pop .45s ease both;
+}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+
+.brand-big{text-align:center;margin-bottom:22px;position:relative}
+.ring{
+  width:64px;height:64px;margin:0 auto 14px;border-radius:50%;
+  background:conic-gradient(from 200deg,var(--cyan),var(--violet),var(--cyan));
+  display:grid;place-items:center;position:relative;
+  box-shadow:0 0 34px rgba(34,224,255,.35);
+}
+.ring::after{
+  content:"";position:absolute;inset:4px;border-radius:50%;background:#0a1120;
+  box-shadow:inset 0 0 20px rgba(34,224,255,.25);
+}
+.ring::before{
+  content:"🔒";position:absolute;z-index:2;font-size:22px;
+}
+.brand-big h1{
+  margin:0;font-size:26px;letter-spacing:2px;font-weight:800;
+}
+.brand-big h1 .omega{color:var(--cyan)}
+.brand-big h1 .sig{color:var(--violet)}
+.brand-big p{margin:8px 0 0;font-size:12.5px;color:var(--muted);letter-spacing:.4px}
+
+.tabs{display:flex;gap:6px;background:rgba(255,255,255,.04);padding:5px;border-radius:14px;margin-bottom:18px}
+.tab{
+  flex:1;padding:10px;border:0;border-radius:10px;cursor:pointer;
+  background:transparent;color:var(--muted);font-weight:600;font-size:13.5px;
+  transition:.25s;
+}
+.tab.active{background:linear-gradient(135deg,rgba(34,224,255,.2),rgba(138,107,255,.25));color:#fff;box-shadow:0 4px 16px rgba(34,224,255,.15)}
+
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:14px;letter-spacing:.3px;font-weight:600}
+input{
+  width:100%;margin-top:7px;padding:13px 14px;border-radius:12px;
+  background:rgba(4,10,20,.7);border:1px solid var(--line);
+  color:var(--txt);font-size:15px;outline:none;transition:.2s;
+}
+input:focus{border-color:rgba(34,224,255,.55);box-shadow:0 0 0 3px rgba(34,224,255,.12)}
+.pass{position:relative}
+.pass input{padding-right:46px}
+.pass button{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  background:transparent;border:0;color:var(--muted);font-size:16px;cursor:pointer;padding:8px;border-radius:8px;
+}
+.pass button:hover{color:var(--cyan)}
+
+.btn{
+  width:100%;padding:14px;border-radius:13px;border:0;cursor:pointer;
+  font-size:15px;font-weight:700;letter-spacing:.4px;transition:.22s;
+}
+.btn.primary{
+  background:linear-gradient(135deg,var(--cyan),var(--violet));
+  color:#04121a;box-shadow:0 12px 30px rgba(34,224,255,.25);
+}
+.btn.primary:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(34,224,255,.35)}
+.btn.primary:active{transform:scale(.98)}
+
+.msg{margin:12px 0 0;font-size:13px;text-align:center;min-height:18px;color:var(--danger)}
+.msg.ok{color:#39e58c}
+.foot{text-align:center;margin:20px 0 0;font-size:11.5px;color:#546a86;letter-spacing:.6px}
+.foot strong{color:var(--cyan);font-weight:700}
+
+/* ---------- APP ---------- */
+.app{min-height:100dvh;padding:0 0 40px}
+header{
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 16px;
+  background:rgba(6,10,18,.82);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.dot{
+  width:36px;height:36px;border-radius:12px;flex:none;
+  background:linear-gradient(135deg,var(--cyan),var(--violet));
+  display:grid;place-items:center;font-size:16px;
+  box-shadow:0 6px 20px rgba(34,224,255,.3);
+}
+.brand h1{margin:0;font-size:15px;letter-spacing:1.4px;font-weight:800;white-space:nowrap}
+.brand h1 .omega{color:var(--cyan)}
+.brand h1 .sig{color:var(--violet)}
+.brand small{display:block;font-size:10px;color:var(--muted);letter-spacing:.5px;margin-top:2px}
+
+.user-box{display:flex;align-items:center;gap:8px;min-width:0}
+#userPhone{
+  font-size:12px;color:var(--muted);max-width:120px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;
+  background:rgba(255,255,255,.05);padding:7px 11px;border-radius:10px;border:1px solid var(--line);
+}
+#btnLogout{
+  background:rgba(255,77,109,.12);border:1px solid rgba(255,77,109,.3);
+  color:#ff8ea3;padding:8px 12px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;
+}
+#btnLogout:hover{background:rgba(255,77,109,.22)}
+
+.wrap{max-width:1100px;margin:0 auto;padding:18px 16px 0}
+
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.act{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:16px 8px;border-radius:var(--r);cursor:pointer;
+  background:var(--card);border:1px solid var(--line);
+  color:var(--txt);font-size:12px;font-weight:600;transition:.22s;
+}
+.act span.ico{font-size:22px;line-height:1}
+.act:hover{transform:translateY(-3px);border-color:rgba(34,224,255,.45);box-shadow:0 12px 30px rgba(0,0,0,.4)}
+.act:active{transform:scale(.97)}
+
+.stats{
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:13px 16px;margin-bottom:16px;font-size:12.5px;color:var(--muted);
+}
+.stats b{color:var(--txt)}
+.bar{height:6px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;margin-top:8px;width:100%}
+.bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--violet));width:0;transition:width .5s}
+
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:14px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:none;padding:9px 16px;border-radius:99px;font-size:12.5px;font-weight:700;cursor:pointer;
+  background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--muted);transition:.2s;
+}
+.chip.active{background:linear-gradient(135deg,rgba(34,224,255,.22),rgba(138,107,255,.28));color:#fff;border-color:rgba(34,224,255,.4)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:13px}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  overflow:hidden;position:relative;transition:.25s;
+  animation:pop .35s ease both;
+}
+.card:hover{transform:translateY(-3px);border-color:rgba(34,224,255,.4);box-shadow:0 14px 34px rgba(0,0,0,.45)}
+.thumb{
+  aspect-ratio:1/1;background:#0a1220;display:grid;place-items:center;
+  cursor:pointer;overflow:hidden;position:relative;
+}
+.thumb img,.thumb video{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .fileico{font-size:38px}
+.badge{
+  position:absolute;bottom:7px;right:7px;background:rgba(0,0,0,.65);
+  padding:3px 8px;border-radius:8px;font-size:10px;font-weight:700;
+  backdrop-filter:blur(6px);letter-spacing:.4px;
+}
+.play{
+  position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
+  background:rgba(0,0,0,.18);
+}
+.play span{
+  width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.3);display:grid;place-items:center;font-size:15px;
+  backdrop-filter:blur(4px);
+}
+.meta{padding:9px 11px 11px}
+.meta .nm{
+  font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.meta .sub{font-size:10.5px;color:var(--muted);margin-top:4px;display:flex;justify-content:space-between;gap:6px}
+.card .tools{
+  position:absolute;top:7px;right:7px;display:flex;gap:6px;opacity:0;transition:.2s;
+}
+.card:hover .tools{opacity:1}
+.tools button{
+  width:30px;height:30px;border-radius:9px;border:0;cursor:pointer;font-size:13px;
+  background:rgba(0,0,0,.65);color:#fff;backdrop-filter:blur(6px);display:grid;place-items:center;transition:.2s;
+}
+.tools button:hover{background:rgba(34,224,255,.85);color:#04121a}
+.tools button.del:hover{background:var(--danger);color:#fff}
+
+.empty{
+  text-align:center;padding:60px 20px;color:var(--muted);
+  border:1px dashed var(--line);border-radius:var(--r);background:rgba(255,255,255,.02);
+}
+.empty .big{font-size:46px;margin-bottom:12px;opacity:.7}
+.empty p{margin:6px 0;font-size:13.5px}
+
+/* ---------- MODAL ---------- */
+.modal{
+  position:fixed;inset:0;z-index:100;background:rgba(3,6,12,.92);
+  backdrop-filter:blur(10px);display:grid;place-items:center;padding:16px;
+  animation:fade .2s ease both;
+}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal-inner{max-width:920px;width:100%;max-height:92dvh;display:flex;flex-direction:column;gap:12px}
+.viewer-media{
+  flex:1;min-height:0;display:grid;place-items:center;border-radius:16px;overflow:hidden;
+  background:#000;border:1px solid var(--line);
+}
+.viewer-media img,.viewer-media video{max-width:100%;max-height:74dvh;object-fit:contain;display:block}
+.viewer-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;
+}
+.viewer-bar .nm{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.viewer-bar .acts{display:flex;gap:8px;flex:none}
+.viewer-bar button,.viewer-bar a{
+  padding:9px 14px;border-radius:10px;border:1px solid var(--line);
+  background:rgba(255,255,255,.05);color:var(--txt);font-size:12px;font-weight:700;
+  cursor:pointer;text-decoration:none;transition:.2s;white-space:nowrap;
+}
+.viewer-bar a{background:linear-gradient(135deg,var(--cyan),var(--violet));color:#04121a;border:0}
+.viewer-bar button:hover{background:rgba(255,255,255,.12)}
+
+@media(max-width:520px){
+  .brand h1{font-size:13px}
+  #userPhone{display:none}
+  .actions{grid-template-columns:repeat(3,1fr);gap:8px}
+  .act{padding:13px 5px;font-size:11px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:10px}
+  .auth-card{padding:26px 18px 18px}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= AUTHENTIFICATION ================= -->
+<section id="authScreen" class="screen auth">
+  <div class="auth-card">
+    <div class="brand-big">
+      <div class="ring"></div>
+      <h1>CL<span class="omega">Ω</span>US <span class="sig">TΣCH</span></h1>
+      <p>Coffre privé · photos · vidéos · fichiers</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-mode="login" type="button">Connexion</button>
+      <button class="tab" data-mode="register" type="button">Créer un compte</button>
+    </div>
+
+    <form id="authForm" autocomplete="off">
+      <label>Numéro de téléphone
+        <input id="phone" type="tel" inputmode="tel" placeholder="+243 000 000 000" autocomplete="tel" required>
+      </label>
+      <label>Code d'accès
+        <div class="pass">
+          <input id="code" type="password" placeholder="••••••" autocomplete="new-password" required>
+          <button type="button" id="togglePass" aria-label="Afficher le code">👁</button>
+        </div>
+      </label>
+      <button class="btn primary" id="btnSubmit" type="submit">Se connecter</button>
+      <p id="authMsg" class="msg"></p>
+    </form>
+
+    <p class="foot">by <strong>Mr Kira Tech</strong></p>
+  </div>
+</section>
+
+<!-- ================= APPLICATION ================= -->
+<section id="appScreen" class="screen app hidden">
+  <header>
+    <div class="brand">
+      <div class="dot">🔒</div>
+      <div>
+        <h1>CL<span class="omega">Ω</span>US <span class="sig">TΣCH</span></h1>
+        <small>by Mr Kira Tech</small>
+      </div>
+    </div>
+    <div class="user-box">
+      <span id="userPhone"></span>
+      <button id="btnLogout">Sortir</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="actions">
+      <button class="act" id="btnPhoto"><span class="ico">📷</span>Photos</button>
+      <button class="act" id="btnVideo"><span class="ico">🎬</span>Vidéos</button>
+      <button class="act" id="btnFile"><span class="ico">📎</span>Fichiers</button>
+    </div>
+
+    <input type="file" id="inPhoto" accept="image/*" multiple hidden>
+    <input type="file" id="inVideo" accept="video/*" multiple hidden>
+    <input type="file" id="inFile" multiple hidden>
+
+    <div class="stats">
+      <div><b id="statCount">0</b> élément(s) · <b id="statSize">0 o</b></div>
+      <div id="statQuota" style="font-size:11.5px"></div>
+      <div class="bar"><i id="statBar"></i></div>
+    </div>
+
+    <div class="chips">
+      <button class="chip active" data-filter="all">Tout</button>
+      <button class="chip" data-filter="photos">Photos</button>
+      <button class="chip" data-filter="videos">Vidéos</button>
+      <button class="chip" data-filter="files">Fichiers</button>
+    </div>
+
+    <div id="grid" class="grid"></div>
+  </div>
+</section>
+
+<!-- ================= VISIONNEUSE ================= -->
+<div id="viewer" class="modal hidden">
+  <div class="modal-inner">
+    <div class="viewer-media" id="viewerMedia"></div>
+    <div class="viewer-bar">
+      <span class="nm" id="viewerName">—</span>
+      <div class="acts">
+        <a id="viewerDl" download>⤓ Télécharger</a>
+        <button id="viewerClose">✕ Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   CLΩUS TΣCH — by Mr Kira Tech
+   Stockage 100% local (IndexedDB) : rien ne quitte l'appareil.
+   ===================================================================== */
+
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+/* ---------- Utilitaires ---------- */
+const fmtSize = b => b < 1024 ? b + ' o'
+  : b < 1048576 ? (b / 1024).toFixed(1) + ' Ko'
+  : b < 1073741824 ? (b / 1048576).toFixed(1) + ' Mo'
+  : (b / 1073741824).toFixed(2) + ' Go';
+
+const fmtDate = t => new Date(t).toLocaleString('fr-FR',
+  { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+const uid = () => (crypto.randomUUID ? crypto.randomUUID()
+  : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2));
+
+const normPhone = p => p.replace(/[^\d+]/g, '');
+
+async function hash(str){
+  try{
+    if (crypto.subtle){
+      const buf = new TextEncoder().encode('ct$' + str);
+      const h = await crypto.subtle.digest('SHA-256', buf);
+      return [...new Uint8Array(h)].map(x => x.toString(16).padStart(2,'0')).join('');
+    }
+  }catch(e){}
+  let h = 5381;
+  for (let i = 0; i < str.length; i++){ h = ((h << 5) + h) + str.charCodeAt(i); h |= 0; }
+  return 'f' + Math.abs(h).toString(16);
+}
+
+/* ---------- IndexedDB ---------- */
+const DB_NAME = 'clous_tech_db', DB_VER = 1, STORE = 'files';
+
+function openDB(){
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE)){
+        const s = db.createObjectStore(STORE, { keyPath: 'id' });
+        s.createIndex('owner', 'owner', { unique: false });
+      }
+    };
+    req.onsuccess = () => res(req.result);
+    req.onerror   = () => rej(req.error);
+  });
+}
+
+async function dbAdd(item){
+  const db = await openDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, 'readwrite');
+    tx.objectStore(STORE).put(item);
+    tx.oncomplete = () => res(item);
+    tx.onerror    = () => rej(tx.error);
+  });
+}
+
+async function dbList(owner){
+  const db = await openDB();
+  return new Promise((res, rej) => {
+    const tx  = db.transaction(STORE, 'readonly');
+    const req = tx.objectStore(STORE).index('owner').getAll(owner);
+    req.onsuccess = () => res(req.result || []);
+    req.onerror   = () => rej(req.error);
+  });
+}
+
+async function dbDelete(id){
+  const db = await openDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction(STORE, 'readwrite');
+    tx.objectStore(STORE).delete(id);
+    tx.oncomplete = () => res();
+    tx.onerror    = () => rej(tx.error);
+  });
+}
+
+/* ---------- Comptes (localStorage) ---------- */
+const USERS_KEY   = 'ct_users_v1';
+const SESSION_KEY = 'ct_session_v1';
+
+const getUsers = () => {
+  try { return JSON.parse(localStorage.getItem(USERS_KEY) || '{}'); }
+  catch(e){ return {}; }
+};
+const setUsers = u => localStorage.setItem(USERS_KEY, JSON.stringify(u));
+
+/* ---------- État ---------- */
+let currentUser = null;
+let allFiles    = [];
+let filterMode  = 'all';
+let authMode    = 'login';
+const objectUrls = [];
+
+function revokeAll(){
+  while (objectUrls.length) URL.revokeObjectURL(objectUrls.pop());
+}
+
+/* =====================================================================
+   AUTHENTIFICATION
+   ===================================================================== */
+$$('.tab').forEach(t => t.addEventListener('click', () => {
+  authMode = t.dataset.mode;
+  $$('.tab').forEach(x => x.classList.toggle('active', x === t));
+  $('#btnSubmit').textContent = authMode === 'login' ? 'Se connecter' : 'Créer mon compte';
+  $('#authMsg').textContent = '';
+  $('#authMsg').className = 'msg';
+}));
+
+$('#togglePass').addEventListener('click', () => {
+  const i = $('#code');
+  i.type = i.type === 'password' ? 'text' : 'password';
+});
+
+function showMsg(txt, ok = false){
+  const m = $('#authMsg');
+  m.textContent = txt;
+  m.className = 'msg' + (ok ? ' ok' : '');
+}
+
+$('#authForm').addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const phone = normPhone($('#phone').value.trim());
+  const code  = $('#code').value.trim();
+
+  if (phone.replace(/\D/g,'').length < 6) return showMsg('Numéro invalide (6 chiffres min.).');
+  if (code.length < 4)                   return showMsg('Le code doit contenir au moins 4 caractères.');
+
+  const users = getUsers();
+  const codeHash = await hash(code);
+
+  if (authMode === 'register'){
+    if (users[phone]) return showMsg('Ce numéro possède déjà un compte. Connectez-vous.');
+    users[phone] = { codeHash, created: Date.now() };
+    setUsers(users);
+    showMsg('Compte créé ✔ Connexion en cours…', true);
+    setTimeout(() => enterApp(phone), 500);
+  } else {
+    if (!users[phone])                    return showMsg('Aucun compte trouvé pour ce numéro.');
+    if (users[phone].codeHash !== codeHash) return showMsg('Code d\'accès incorrect.');
+    enterApp(phone);
+  }
+});
+
+async function enterApp(phone){
+  currentUser = phone;
+  localStorage.setItem(SESSION_KEY, phone);
+
+  $('#authScreen').classList.add('hidden');
+  $('#appScreen').classList.remove('hidden');
+  $('#userPhone').textContent = phone;
+  $('#authForm').reset();
+  $('#authMsg').textContent = '';
+
+  await refresh();
+  updateQuota();
+}
+
+$('#btnLogout').addEventListener('click', () => {
+  localStorage.removeItem(SESSION_KEY);
+  currentUser = null;
+  allFiles = [];
+  revokeAll();
+  $('#grid').innerHTML = '';
+  $('#appScreen').classList.add('hidden');
+  $('#authScreen').classList.remove('hidden');
+  closeViewer();
+});
+
+/* Reconnexion automatique */
+(async () => {
+  const s = localStorage.getItem(SESSION_KEY);
+  if (s && getUsers()[s]) await enterApp(s);
+})();
+
+/* =====================================================================
+   AJOUT DE FICHIERS
+   ===================================================================== */
+$('#btnPhoto').onclick = () => $('#inPhoto').click();
+$('#btnVideo').onclick = () => $('#inVideo').click();
+$('#btnFile').onclick  = () => $('#inFile').click();
+
+['inPhoto','inVideo','inFile'].forEach(id => {
+  $('#' + id).addEventListener('change', async e => {
+    const files = [...e.target.files];
+    e.target.value = '';
+    if (!files.length || !currentUser) return;
+
+    for (const f of files){
+      try{
+        await dbAdd({
+          id: uid(),
+          owner: currentUser,
+          name: f.name || 'sans-nom',
+          mime: f.type || 'application/octet-stream',
+          size: f.size,
+          date: Date.now(),
+          blob: f
+        });
+      }catch(err){
+        console.error(err);
+        alert('Impossible de sauvegarder « ' + f.name + ' » (stockage plein ?)');
+      }
+    }
+    await refresh();
+    updateQuota();
+  });
+});
+
+/* =====================================================================
+   AFFICHAGE
+   ===================================================================== */
+$$('.chip').forEach(c => c.addEventListener('click', () => {
+  filterMode = c.dataset.filter;
+  $$('.chip').forEach(x => x.classList.toggle('active', x === c));
+  render();
+}));
+
+async function refresh(){
+  if (!currentUser) return;
+  try{
+    allFiles = await dbList(currentUser);
+  }catch(e){
+    console.error(e);
+    allFiles = [];
+  }
+  render();
+}
+
+function isPhoto(f){ return f.mime.startsWith('image/'); }
+function isVideo(f){ return f.mime.startsWith('video/'); }
+
+function fileIcon(f){
+  const ext = (f.name.split('.').pop() || '').toLowerCase();
+  if (ext === 'pdf') return '📕';
+  if (['doc','docx'].includes(ext)) return '📘';
+  if (['xls','xlsx','csv'].includes(ext)) return '📗';
+  if (['zip','rar','7z'].includes(ext)) return '🗜️';
+  if (['mp3','wav','ogg','m4a'].includes(ext)) return '🎵';
+  if (['txt','md'].includes(ext)) return '📄';
+  return '📁';
+}
+
+function render(){
+  const grid = $('#grid');
+  revokeAll();
+  grid.innerHTML = '';
+
+  const list = allFiles
+    .filter(f => filterMode === 'all' ? true
+      : filterMode === 'photos' ? isPhoto(f)
+      : filterMode === 'videos' ? isVideo(f)
+      : (!isPhoto(f) && !isVideo(f)))
+    .sort((a, b) => b.date - a.date);
+
+  /* Statistiques */
+  const total = allFiles.reduce((s, f) => s + (f.size || 0), 0);
+  $('#statCount').textContent = allFiles.length;
+  $('#statSize').textContent  = fmtSize(total);
+
+  if (!list.length){
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1">
+      <div class="big">🗂️</div>
+      <p><b>Aucun élément</b> pour le moment.</p>
+      <p>Ajoutez une photo, une vidéo ou un fichier avec les boutons ci-dessus.</p>
+    </div>`;
+    return;
+  }
+
+  list.forEach(f => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    /* --- Vignette --- */
+    const thumb = document.createElement('div');
+    thumb.className = 'thumb';
+
+    const url = URL.createObjectURL(f.blob);
+    objectUrls.push(url);
+
+    if (isPhoto(f)){
+      const img = document.createElement('img');
+      img.src = url;
+      img.loading = 'lazy';
+      img.alt = f.name;
+      thumb.appendChild(img);
+    } else if (isVideo(f)){
+      const v = document.createElement('video');
+      v.src = url;
+      v.preload = 'metadata';
+      v.muted = true;
+      thumb.appendChild(v);
+
+      const play = document.createElement('div');
+      play.className = 'play';
+      play.innerHTML = '<span>▶</span>';
+      thumb.appendChild(play);
+    } else {
+      const ico = document.createElement('div');
+      ico.className = 'fileico';
+      ico.textContent = fileIcon(f);
+      thumb.appendChild(ico);
+    }
+
+    /* --- Badge type --- */
+    const badge = document.createElement('div');
+    badge.className = 'badge';
+    badge.textContent = isPhoto(f) ? 'PHOTO' : isVideo(f) ? 'VIDÉO' : 'FICHIER';
+    thumb.appendChild(badge);
+
+    thumb.addEventListener('click', () => {
+      if (isPhoto(f) || isVideo(f)) openViewer(f);
+      else download(f);
+    });
+
+    /* --- Outils --- */
+    const tools = document.createElement('div');
+    tools.className = 'tools';
+
+    const bDl = document.createElement('button');
+    bDl.textContent = '⤓';
+    bDl.title = 'Télécharger';
+    bDl.onclick = ev => { ev.stopPropagation(); download(f); };
+
+    const bDel = document.createElement('button');
+    bDel.className = 'del';
+    bDel.textContent = '🗑';
+    bDel.title = 'Supprimer';
+    bDel.onclick = async ev => {
+      ev.stopPropagation();
+      if (!confirm('Supprimer définitivement « ' + f.name + ' » ?')) return;
+      await dbDelete(f.id);
+      await refresh();
+      updateQuota();
+    };
+
+    tools.appendChild(bDl);
+    tools.appendChild(bDel);
+
+    /* --- Métadonnées --- */
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+
+    const nm = document.createElement('div');
+    nm.className = 'nm';
+    nm.textContent = f.name;
+    nm.title = f.name;
+
+    const sub = document.createElement('div');
+    sub.className = 'sub';
+    sub.innerHTML = `<span>${fmtSize(f.size)}</span><span>${fmtDate(f.date)}</span>`;
+
+    meta.appendChild(nm);
+    meta.appendChild(sub);
+
+    card.appendChild(thumb);
+    card.appendChild(tools);
+    card.appendChild(meta);
+    grid.appendChild(card);
+  });
+}
+
+/* ---------- Téléchargement ---------- */
+function download(f){
+  const url = URL.createObjectURL(f.blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = f.name || 'fichier';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+/* =====================================================================
+   VISIONNEUSE
+   ===================================================================== */
+let viewerUrl = null;
+
+function openViewer(f){
+  const media = $('#viewerMedia');
+  media.innerHTML = '';
+  closeViewerMedia();
+
+  viewerUrl = URL.createObjectURL(f.blob);
+
+  if (isPhoto(f)){
+    const img = new Image();
+    img.src = viewerUrl;
+    media.appendChild(img);
+  } else {
+    const v = document.createElement('video');
+    v.src = viewerUrl;
+    v.controls = true;
+    v.autoplay = true;
+    v.playsInline = true;
+    media.appendChild(v);
+  }
+
+  $('#viewerName').textContent = f.name;
+  $('#viewerDl').onclick = () => download(f);
+  $('#viewer').classList.remove('hidden');
+}
+
+function closeViewerMedia(){
+  if (viewerUrl){ URL.revokeObjectURL(viewerUrl); viewerUrl = null; }
+  const media = $('#viewerMedia');
+  const v = media.querySelector('video');
+  if (v){ v.pause(); v.removeAttribute('src'); v.load(); }
+}
+
+function closeViewer(){
+  closeViewerMedia();
+  $('#viewerMedia').innerHTML = '';
+  $('#viewer').classList.add('hidden');
+}
+
+$('#viewerClose').onclick = closeViewer;
+$('#viewer').addEventListener('click', e => {
+  if (e.target.id === 'viewer') closeViewer();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !$('#viewer').classList.contains('hidden')) closeViewer();
+});
+
+/* =====================================================================
+   ESPACE DE STOCKAGE
+   ===================================================================== */
+async function updateQuota(){
+  const el = $('#statQuota');
+  const bar = $('#statBar');
+  if (!navigator.storage || !navigator.storage.estimate){
+    el.textContent = 'Stockage local';
+    return;
+  }
+  try{
+    const est = await navigator.storage.estimate();
+    const used = est.usage || 0;
+    const quota = est.quota || 1;
+    const pct = Math.min(100, (used / quota) * 100);
+    el.textContent = fmtSize(used) + ' / ' + fmtSize(quota);
+    bar.style.width = pct.toFixed(1) + '%';
+  }catch(e){
+    el.textContent = 'Stockage local';
+  }
+}
+</script>
+</body>
+</html>
